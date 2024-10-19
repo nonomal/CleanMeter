@@ -72,7 +72,7 @@ private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
         state = overlayState,
         onCloseRequest = { exitApplication() },
         visible = true,
-        title = "PCMonitoR",
+        title = "Clean Meter",
         resizable = false,
         alwaysOnTop = true,
         transparent = true,
@@ -104,7 +104,7 @@ private fun ApplicationScope.SettingsWindow(onOverlaySettings: (OverlaySettings)
         onCloseRequest = { isVisible = false },
         icon = icon,
         visible = isVisible,
-        title = "PCMonitoR",
+        title = "Clean Meter",
         resizable = false
     ) {
         Settings(onOverlaySettings = onOverlaySettings)
