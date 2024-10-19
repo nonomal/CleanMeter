@@ -32,7 +32,7 @@ fun FooterUi() {
                 painter = painterResource("imgs/github.svg"),
                 null,
                 modifier = Modifier.clickable {
-                    uriHandler.openUri("https://github.com/Danil0v3s/kMonitor/releases/latest")
+                    uriHandler.openUri("https://github.com/Danil0v3s/CleanMeter/releases/latest")
                 }
             )
         }
