@@ -4,16 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,12 +15,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.firstsoft.kracing.target.server.ui.components.CircularProgress
+import br.com.firstsoft.kracing.target.server.ui.components.Pill
 import mahm.CpuTemp
 import mahm.CpuUsage
 import mahm.Data
@@ -39,11 +40,6 @@ import mahm.RamUsage
 import mahm.RamUsagePercent
 import mahm.VramUsage
 import mahm.VramUsagePercent
-import ui.ColorTokens.ClearGray
-import ui.ColorTokens.Green
-import ui.ColorTokens.OffWhite
-import ui.ColorTokens.Red
-import ui.ColorTokens.Yellow
 import ui.app.OverlaySettings
 
 object ColorTokens {
@@ -97,7 +93,7 @@ fun OverlayUi(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-            ContentWrapper(
+            Content(
                 data!!,
                 overlaySettings = overlaySettings,
             )
@@ -106,62 +102,122 @@ fun OverlayUi(
 }
 
 @Composable
-fun Pill(
-    title: String,
-    isHorizontal: Boolean,
-    minWidth: Dp = 80.dp,
-    content: @Composable RowScope.() -> Unit
-) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .conditional(
-                predicate = isHorizontal,
-                ifTrue = { fillMaxHeight().widthIn(min = minWidth).background(Color.Black.copy(alpha = 0.3f), CircleShape) },
-                ifFalse = { fillMaxWidth().background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(8.dp)) },
-            )
-            .padding(vertical = if (isHorizontal) 4.dp else 8.dp, horizontal = 12.dp)
-    ) {
-        Text(
-            text = title,
-            fontSize = 10.sp,
-            color = OffWhite,
-            lineHeight = 0.sp,
-            fontWeight = FontWeight.Normal,
-            letterSpacing = 1.sp
-        )
-
-        content()
-    }
-}
-
-@Composable
-fun ContentWrapper(data: Data, overlaySettings: OverlaySettings) {
+fun Content(data: Data, overlaySettings: OverlaySettings) {
     if (overlaySettings.isHorizontal) {
         Row(
             modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Content(data, overlaySettings)
+            fps(overlaySettings, data)
+            gpu(overlaySettings, data)
+            cpu(overlaySettings, data)
+            ram(overlaySettings, data)
         }
     } else {
         Column(
             modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Content(data, overlaySettings)
+            Layout(
+                content = {
+                    fps(overlaySettings, data)
+                    gpu(overlaySettings, data)
+                    cpu(overlaySettings, data)
+                    ram(overlaySettings, data)
+                },
+                measurePolicy = object : MeasurePolicy {
+                    override fun MeasureScope.measure(
+                        measurables: List<Measurable>,
+                        constraints: Constraints
+                    ): MeasureResult {
+                        val maxWidth = maxIntrinsicWidth(measurables, constraints.maxHeight)
+                        val placeables = measurables.map { it.measure(Constraints.fixedWidth(maxWidth)) }
+                        val height = placeables.sumOf { it.height } + 4.dp.roundToPx() * (placeables.size - 1)
+
+                        return layout(maxWidth, height) {
+                            var yPosition = 0
+                            placeables.forEach { placeable ->
+                                placeable.placeRelative(x = 0, y = yPosition)
+                                yPosition += placeable.height + 4.dp.roundToPx()
+                            }
+                        }
+                    }
+
+                    override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+                        measurables: List<IntrinsicMeasurable>,
+                        height: Int
+                    ): Int {
+                        return measurables.map { it.maxIntrinsicWidth(height) }.maxOf { it }
+                    }
+                })
         }
     }
 }
 
 @Composable
-fun Content(
-    data: Data,
-    overlaySettings: OverlaySettings,
-) {
+private fun ram(overlaySettings: OverlaySettings, data: Data) {
+    if (overlaySettings.ramUsage) {
+        Pill(
+            title = "RAM",
+            isHorizontal = overlaySettings.isHorizontal,
+        ) {
+            CircularProgress(
+                value = data.RamUsagePercent / 100f,
+                label = String.format("%02.1f", data.RamUsage / 1000),
+                unit = "GB"
+            )
+        }
+    }
+}
+
+@Composable
+private fun cpu(overlaySettings: OverlaySettings, data: Data) {
+    if (overlaySettings.cpuTemp || overlaySettings.cpuUsage) {
+        Pill(
+            title = "CPU",
+            isHorizontal = overlaySettings.isHorizontal,
+        ) {
+            if (overlaySettings.cpuTemp) {
+                CircularProgress(value = data.CpuTemp / 100f, label = "${data.CpuTemp}", unit = "c")
+            }
+            if (overlaySettings.cpuUsage) {
+                CircularProgress(value = data.CpuUsage / 100f, label = String.format("%02d", data.CpuUsage), unit = "%")
+            }
+        }
+    }
+}
+
+@Composable
+private fun gpu(overlaySettings: OverlaySettings, data: Data) {
+    if (overlaySettings.gpuTemp || overlaySettings.gpuUsage || overlaySettings.vramUsage) {
+        Pill(
+            title = "GPU",
+            isHorizontal = overlaySettings.isHorizontal,
+        ) {
+            if (overlaySettings.gpuTemp) {
+                CircularProgress(value = data.GpuTemp / 100f, label = "${data.GpuTemp}", unit = "c")
+            }
+            if (overlaySettings.gpuUsage) {
+                CircularProgress(value = data.GpuUsage / 100f, label = String.format("%02d", data.GpuUsage), unit = "%")
+            }
+            if (overlaySettings.vramUsage) {
+                CircularProgress(
+                    value = data.VramUsagePercent / 100f,
+                    label = String.format("%02.1f", data.VramUsage / 1000),
+                    unit = "GB"
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun fps(overlaySettings: OverlaySettings, data: Data) {
     if (overlaySettings.fps || overlaySettings.frametime) {
-        Pill(title = "FPS", isHorizontal = overlaySettings.isHorizontal) {
+        Pill(
+            title = "FPS",
+            isHorizontal = overlaySettings.isHorizontal,
+        ) {
             if (overlaySettings.fps) {
                 Text(
                     text = "${data.FPS}",
@@ -181,45 +237,6 @@ fun Content(
                     fontWeight = FontWeight.Normal,
                 )
             }
-        }
-    }
-
-    if (overlaySettings.gpuTemp || overlaySettings.gpuUsage || overlaySettings.vramUsage) {
-        Pill(title = "GPU", isHorizontal = overlaySettings.isHorizontal) {
-            if (overlaySettings.gpuTemp) {
-                CircularProgress(value = data.GpuTemp / 100f, label = "${data.GpuTemp}", unit = "c")
-            }
-            if (overlaySettings.gpuUsage) {
-                CircularProgress(value = data.GpuUsage / 100f, label = String.format("%02d", data.GpuUsage), unit = "%")
-            }
-            if (overlaySettings.vramUsage) {
-                CircularProgress(
-                    value = data.VramUsagePercent / 100f,
-                    label = String.format("%02.1f", data.VramUsage / 1000),
-                    unit = "GB"
-                )
-            }
-        }
-    }
-
-    if (overlaySettings.cpuTemp || overlaySettings.cpuUsage) {
-        Pill(title = "CPU", isHorizontal = overlaySettings.isHorizontal) {
-            if (overlaySettings.cpuTemp) {
-                CircularProgress(value = data.CpuTemp / 100f, label = "${data.CpuTemp}", unit = "c")
-            }
-            if (overlaySettings.cpuUsage) {
-                CircularProgress(value = data.CpuUsage / 100f, label = String.format("%02d", data.CpuUsage), unit = "%")
-            }
-        }
-    }
-
-    if (overlaySettings.ramUsage) {
-        Pill(title = "RAM", isHorizontal = overlaySettings.isHorizontal) {
-            CircularProgress(
-                value = data.RamUsagePercent / 100f,
-                label = String.format("%02.1f", data.RamUsage / 1000),
-                unit = "GB"
-            )
         }
     }
 }
