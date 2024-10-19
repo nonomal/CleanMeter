@@ -75,6 +75,7 @@ fun Settings(
 
 @Serializable
 data class OverlaySettings(
+    val isHorizontal: Boolean = true,
     val positionIndex: Int = 0,
     val fps: Boolean = true,
     val frametime: Boolean = false,
@@ -116,8 +117,14 @@ private fun OverlaySettingsUi(
         selectedIndex = overlaySettings.positionIndex,
         onValueChanged = { overlaySettings = overlaySettings.copy(positionIndex = it) }
     )
-
     Divider()
+
+    Label("Orientation")
+    CheckboxWithLabel(
+        label = "Use Horizontal?",
+        onCheckedChange = { overlaySettings = overlaySettings.copy(isHorizontal = it) },
+        checked = overlaySettings.isHorizontal,
+    )
 
     Label("FPS Settings")
     CheckboxWithLabel(

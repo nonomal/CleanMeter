@@ -46,7 +46,7 @@ fun main() = application {
 private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
     val alignment = remember(overlaySettings.positionIndex) { positions[overlaySettings.positionIndex] }
     val overlayState = rememberWindowState().apply {
-        size = DpSize(1024.dp, 80.dp)
+        size = if (overlaySettings.isHorizontal) DpSize(1024.dp, 80.dp) else DpSize(350.dp, 1024.dp)
         placement = WindowPlacement.Floating
         position = WindowPosition.Aligned(alignment)
     }
