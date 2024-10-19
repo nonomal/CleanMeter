@@ -1,4 +1,4 @@
-package br.com.firstsoft.kracing.target.server
+package br.com.firstsoft.target.server
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -40,7 +40,8 @@ val positions = listOf(
 
 fun setTransparent(w: Component) {
     val hwnd = getHWnd(w)
-    val wl = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE) or WinUser.WS_EX_LAYERED or WinUser.WS_EX_TRANSPARENT
+    val wl =
+        User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE) or WinUser.WS_EX_LAYERED or WinUser.WS_EX_TRANSPARENT
     User32.INSTANCE.SetWindowLong(hwnd, WinUser.GWL_EXSTYLE, wl)
 }
 
@@ -48,7 +49,7 @@ fun getHWnd(w: Component): HWND {
     return HWND().apply { pointer = Native.getComponentPointer(w) }
 }
 
-    fun main() = application {
+fun main() = application {
     var overlaySettings by remember { mutableStateOf(OverlaySettings()) }
 
     OverlayWindow(overlaySettings)
@@ -85,8 +86,8 @@ private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
 }
 
 @Composable
-private fun ApplicationScope.SettingsWindow(onOverlaySettings: (OverlaySettings) -> Unit,) {
-    val icon = painterResource("imgs/logo.svg")
+private fun ApplicationScope.SettingsWindow(onOverlaySettings: (OverlaySettings) -> Unit) {
+    val icon = painterResource("imgs/logo.png")
     val state = rememberWindowState().apply {
         size = DpSize(500.dp, 500.dp)
     }

@@ -34,7 +34,7 @@ compose.desktop {
         mainClass = "br.com.firstsoft.target.server.ServerMainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Msi)
-            packageName = "PCMonitoR"
+            packageName = "Clean Meter"
             packageVersion = "0.0.1"
         }
     }

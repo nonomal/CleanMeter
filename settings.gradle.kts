@@ -34,7 +34,7 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
 
-rootProject.name = "PCMonitoR"
+rootProject.name = "CleanMeter"
 
 include("core:common")
 include("core:native")
