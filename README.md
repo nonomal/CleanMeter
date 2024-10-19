@@ -1,7 +1,13 @@
 # <img align="left" src="images/Logo.png" height=50> Clean Meter
 
 ### What is this?
-![image](https://user-images.githubusercontent.com/13068064/181916509-d0e8811f-0387-4498-b5bb-787e1e8484c6.png)
+![image](https://github.com/user-attachments/assets/6c7bd91a-7e9a-4c38-a450-d6e2ce26bcd4)
+![image](https://github.com/user-attachments/assets/5e797f42-bebc-4d8f-82c8-837fc4b58a07)
+![image](https://github.com/user-attachments/assets/1fc2ed45-5929-4344-845f-e4ec718dbca6)
+![image](https://github.com/user-attachments/assets/801c9c9d-9462-4804-acc7-3fbba77c2a52)
+![image](https://github.com/user-attachments/assets/03ba60d5-66d8-474a-9db1-bcd95df8e1da)
+
+
 
 A small desktop companion app to display sleek graphs overlays from Afterburner
 
