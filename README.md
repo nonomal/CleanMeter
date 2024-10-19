@@ -1,4 +1,4 @@
-# <img align="left" src="_imgs/Logo.png" height=100> Clean Meter
+# <img align="left" src="_imgs/Logo.png" height=50> Clean Meter
 
 ### What is this?
 ![image](https://user-images.githubusercontent.com/13068064/181916509-d0e8811f-0387-4498-b5bb-787e1e8484c6.png)
