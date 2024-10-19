@@ -26,3 +26,6 @@ A small desktop companion app to display sleek graphs overlays from Afterburner
    9. Ok > Ok
    10. Back to Monitoring tab, check every sensor
 3. Download the latest release, run it
+
+## Current Limitations
+- Doesn't work with exclusive fullscreen
