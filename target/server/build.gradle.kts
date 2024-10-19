@@ -11,7 +11,6 @@ group = "br.com.firstsoft"
 version = "0.0.1"
 
 dependencies {
-    implementation(libs.jna)
     implementation(libs.kotlinx.serialization)
 
     implementation(compose.desktop.currentOs)

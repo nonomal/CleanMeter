@@ -1,12 +1,17 @@
 package win32
 
+import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.Kernel32
+import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinBase
+import com.sun.jna.platform.win32.WinDef.HWND
 import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinNT.HANDLE
 import com.sun.jna.platform.win32.WinNT.INFINITE
+import com.sun.jna.platform.win32.WinUser
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.awt.Component
 import kotlin.coroutines.resume
 
 class WindowsService {
@@ -44,5 +49,18 @@ class WindowsService {
     fun unmapViewOfFile(pointer: Pointer) {
         Kernel32Impl.KERNEL_32.UnmapViewOfFile(pointer)
         lastError = Kernel32Impl.INSTANCE.GetLastError()
+    }
+
+    companion object {
+        fun makeComponentTransparent(w: Component) {
+            val hwnd = getHWnd(w)
+            val wl =
+                User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_EXSTYLE) or WinUser.WS_EX_LAYERED or WinUser.WS_EX_TRANSPARENT
+            User32.INSTANCE.SetWindowLong(hwnd, WinUser.GWL_EXSTYLE, wl)
+        }
+
+        fun getHWnd(w: Component): HWND {
+            return HWND().apply { pointer = Native.getComponentPointer(w) }
+        }
     }
 }
