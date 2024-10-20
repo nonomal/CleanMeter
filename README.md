@@ -22,9 +22,13 @@ A small desktop companion app to display sleek graphs overlays from Afterburner
    6. Click setup
    7. Click add
    8. Search for "Physical Memory Load" and "GPU Memory Usage"
+   
+   ![image](https://github.com/user-attachments/assets/0ad19f39-0fe6-4cb4-95f8-edd343e75e54)
+   ![image](https://github.com/user-attachments/assets/3fdb68ad-0f81-42f7-bb0f-5d35ca08fac3)
+   
    9. Ok > Ok
    10. Back to Monitoring tab, check every sensor
-3. Download the latest release, run it
+4. Download the latest release, run it
 
 ## Current Limitations
 - Doesn't work with exclusive fullscreen
