@@ -23,6 +23,7 @@ import kotlinx.serialization.json.Json
 import ui.app.OVERLAY_SETTINGS_PREFERENCE_KEY
 import ui.app.OverlaySettings
 import ui.app.positionsLabels
+import java.awt.GraphicsEnvironment
 
 @Composable
 fun OverlaySettingsUi(
@@ -33,10 +34,16 @@ fun OverlaySettingsUi(
         .verticalScroll(rememberScrollState()),
     verticalArrangement = Arrangement.spacedBy(8.dp)
 ) {
+    val screenDevices = remember { GraphicsEnvironment.getLocalGraphicsEnvironment().screenDevices }
+
     var overlaySettings by remember {
         val json = PreferencesRepository.getPreferenceString(OVERLAY_SETTINGS_PREFERENCE_KEY)
         val settings = if (json != null) {
-            Json.decodeFromString<OverlaySettings>(json)
+            try {
+                Json.decodeFromString<OverlaySettings>(json)
+            } catch (e: Exception) {
+                OverlaySettings()
+            }
         } else {
             OverlaySettings()
         }
@@ -54,13 +61,21 @@ fun OverlaySettingsUi(
         selectedIndex = overlaySettings.positionIndex,
         onValueChanged = { overlaySettings = overlaySettings.copy(positionIndex = it) }
     )
+    DropdownMenu(
+        title = "Selected Display",
+        options = screenDevices.map { it.defaultConfiguration.device.iDstring },
+        selectedIndex = overlaySettings.selectedDisplayIndex,
+        onValueChanged = { overlaySettings = overlaySettings.copy(selectedDisplayIndex = it) }
+    )
     Divider()
 
     DropdownMenu(
         title = "Graph Type",
         options = OverlaySettings.ProgressType.entries.map { it.name },
         selectedIndex = overlaySettings.progressType.ordinal,
-        onValueChanged = { overlaySettings = overlaySettings.copy(progressType = OverlaySettings.ProgressType.entries[it]) }
+        onValueChanged = {
+            overlaySettings = overlaySettings.copy(progressType = OverlaySettings.ProgressType.entries[it])
+        }
     )
     Divider()
 
@@ -70,6 +85,7 @@ fun OverlaySettingsUi(
         onCheckedChange = { overlaySettings = overlaySettings.copy(isHorizontal = it) },
         checked = overlaySettings.isHorizontal,
     )
+    Divider()
 
     Label("FPS Settings")
     CheckboxWithLabel(

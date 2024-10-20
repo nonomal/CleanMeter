@@ -60,6 +60,7 @@ fun Settings(
 data class OverlaySettings(
     val isHorizontal: Boolean = true,
     val positionIndex: Int = 0,
+    val selectedDisplayIndex: Int = 0,
     val fps: Boolean = true,
     val frametime: Boolean = false,
     val cpuTemp: Boolean = true,
@@ -68,7 +69,7 @@ data class OverlaySettings(
     val gpuUsage: Boolean = true,
     val vramUsage: Boolean = false,
     val ramUsage: Boolean = false,
-    val progressType: ProgressType = ProgressType.Circular
+    val progressType: ProgressType = ProgressType.Circular,
 ) {
     @Serializable
     enum class ProgressType {
