@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -41,8 +42,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEachIndexed
-import br.com.firstsoft.target.server.ui.components.Progress
 import br.com.firstsoft.target.server.ui.components.Pill
+import br.com.firstsoft.target.server.ui.components.Progress
 import mahm.CpuTemp
 import mahm.CpuUsage
 import mahm.Data
@@ -55,6 +56,7 @@ import mahm.RamUsage
 import mahm.RamUsagePercent
 import mahm.VramUsage
 import mahm.VramUsagePercent
+import ui.ColorTokens.OffWhite
 import ui.app.OverlaySettings
 
 object ColorTokens {
@@ -251,73 +253,131 @@ private fun gpu(overlaySettings: OverlaySettings, data: Data) {
 @Composable
 private fun fps(overlaySettings: OverlaySettings, data: Data) {
     if (overlaySettings.fps || overlaySettings.frametime) {
-        Pill(
-            title = "FPS",
-            isHorizontal = overlaySettings.isHorizontal,
-        ) {
-            if (overlaySettings.fps) {
-                Text(
-                    text = "${data.FPS}",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    lineHeight = 0.sp,
-                    fontWeight = FontWeight.Normal,
-                )
+
+        if (overlaySettings.isHorizontal) {
+            Pill(
+                title = "FPS",
+                isHorizontal = overlaySettings.isHorizontal,
+            ) {
+                if (overlaySettings.fps) {
+                    Text(
+                        text = "${data.FPS}",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        lineHeight = 0.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
+
+                if (overlaySettings.frametime) {
+                    FrametimeGraph(data, overlaySettings.isHorizontal)
+                    Text(
+                        text = "${String.format("%02.01f", data.Frametime)} ms",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        lineHeight = 0.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                }
             }
+        } else {
+            Column(
+                modifier = Modifier
+                    .background(
+                        Color.Black.copy(alpha = 0.3f),
+                        RoundedCornerShape(8.dp)
+                    )
+                    .padding(vertical = 8.dp, horizontal = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "FPS",
+                        fontSize = 10.sp,
+                        color = OffWhite,
+                        lineHeight = 0.sp,
+                        fontWeight = FontWeight.Normal,
+                        letterSpacing = 1.sp
+                    )
 
-            if (overlaySettings.frametime) {
-                val largestFrametime = remember { mutableFloatStateOf(0f) }
-                val listSize = 30
-                val frametimePoints = remember { mutableStateListOf<Float>() }
-
-                val frametimePaint = remember {
-                    Paint().apply {
-                        isAntiAlias = true
-                        color = Color.White
-                        strokeWidth = 1f
-                        blendMode = BlendMode.Plus
-                    }
-                }
-
-                LaunchedEffect(data) {
-                    if (data.Frametime > largestFrametime.floatValue) {
-                        largestFrametime.floatValue = data.Frametime
-                    }
-                    frametimePoints.add(data.Frametime / largestFrametime.floatValue)
-                    if (frametimePoints.size > listSize) frametimePoints.removeFirst()
-                }
-
-                Box(modifier = Modifier
-                    .width(100.dp)
-                    .height(45.dp)
-                    .graphicsLayer { alpha = 0.99f }
-                    .drawWithContent {
-                        val colors = listOf(Color.Transparent, Color.Black, Color.Black, Color.Transparent)
-                        val frametimeZip = frametimePoints.zipWithNext()
-
-                        drawIntoCanvas { canvas ->
-                            frametimeZip.fastForEachIndexed { index, pair ->
-                                val x0 = size.width * (1f / listSize * (index))
-                                val y0 = (size.height * (1f - pair.first))
-                                val x1 = size.width * (1f / listSize * (index + 1))
-                                val y1 = (size.height * (1f - pair.second))
-
-                                canvas.drawLine(Offset(x0, y0), Offset(x1, y1), frametimePaint)
-                            }
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        if (overlaySettings.fps) {
+                            Text(
+                                text = "${data.FPS}",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                lineHeight = 0.sp,
+                                fontWeight = FontWeight.Normal,
+                            )
                         }
-                        drawRect(brush = Brush.horizontalGradient(colors), blendMode = BlendMode.DstIn)
-                    })
 
+                        if (overlaySettings.frametime) {
+                            Text(
+                                text = "${String.format("%02.01f", data.Frametime)} ms",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                lineHeight = 0.sp,
+                                fontWeight = FontWeight.Normal,
+                            )
+                        }
+                    }
+                }
 
-                Text(
-                    text = "${String.format("%02.01f", data.Frametime)} ms",
-                    color = Color.White,
-                    fontSize = 12.sp,
-                    lineHeight = 0.sp,
-                    fontWeight = FontWeight.Normal,
-                )
+                FrametimeGraph(data,overlaySettings.isHorizontal)
             }
         }
     }
+}
+
+@Composable
+private fun FrametimeGraph(data: Data, isHorizontal: Boolean) {
+    val largestFrametime = remember { mutableFloatStateOf(0f) }
+    val listSize = 30
+    val frametimePoints = remember { mutableStateListOf<Float>() }
+
+    val frametimePaint = remember {
+        Paint().apply {
+            isAntiAlias = true
+            color = Color.White
+            strokeWidth = 1f
+            blendMode = BlendMode.Plus
+        }
+    }
+
+    LaunchedEffect(data) {
+        if (data.Frametime > largestFrametime.floatValue) {
+            largestFrametime.floatValue = data.Frametime
+        }
+        frametimePoints.add(data.Frametime / largestFrametime.floatValue)
+        if (frametimePoints.size > listSize) frametimePoints.removeFirst()
+    }
+
+    Box(modifier = Modifier
+        .conditional(
+            predicate = isHorizontal,
+            ifTrue = { width(100.dp).height(45.dp) },
+            ifFalse = { fillMaxWidth().height(30.dp) },
+        )
+
+        .graphicsLayer { alpha = 0.99f }
+        .drawWithContent {
+            val colors = listOf(Color.Transparent, Color.Black, Color.Black, Color.Transparent)
+            val frametimeZip = frametimePoints.zipWithNext()
+
+            drawIntoCanvas { canvas ->
+                frametimeZip.fastForEachIndexed { index, pair ->
+                    val x0 = size.width * (1f / listSize * (index))
+                    val y0 = (size.height * (1f - pair.first))
+                    val x1 = size.width * (1f / listSize * (index + 1))
+                    val y1 = (size.height * (1f - pair.second))
+
+                    canvas.drawLine(Offset(x0, y0), Offset(x1, y1), frametimePaint)
+                }
+            }
+            drawRect(brush = Brush.horizontalGradient(colors), blendMode = BlendMode.DstIn)
+        })
 }
 
