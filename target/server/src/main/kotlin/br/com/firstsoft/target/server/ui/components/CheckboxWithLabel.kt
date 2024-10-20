@@ -1,4 +1,4 @@
-package br.com.firstsoft.kracing.target.server.ui.components
+package br.com.firstsoft.target.server.ui.components
 
 import Label
 import androidx.compose.foundation.layout.Row

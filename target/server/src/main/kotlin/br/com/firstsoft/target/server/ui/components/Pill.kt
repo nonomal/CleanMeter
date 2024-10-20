@@ -1,4 +1,4 @@
-package br.com.firstsoft.kracing.target.server.ui.components
+package br.com.firstsoft.target.server.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

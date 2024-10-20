@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
-import br.com.firstsoft.kracing.target.server.ui.components.CheckboxWithLabel
+import br.com.firstsoft.target.server.ui.components.CheckboxWithLabel
 import win32.WinRegistry
 
 const val PREFERENCE_START_MINIMIZED = "PREFERENCE_START_MINIMIZED"

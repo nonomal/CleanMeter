@@ -2,19 +2,42 @@ package ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.NativeCanvas
+import androidx.compose.ui.graphics.NativePaint
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
@@ -22,12 +45,16 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.firstsoft.kracing.target.server.ui.components.CircularProgress
-import br.com.firstsoft.kracing.target.server.ui.components.Pill
+import androidx.compose.ui.unit.times
+import androidx.compose.ui.util.fastForEachIndexed
+import br.com.firstsoft.target.server.ui.components.Progress
+import br.com.firstsoft.target.server.ui.components.Pill
 import mahm.CpuTemp
 import mahm.CpuUsage
 import mahm.Data
@@ -161,10 +188,11 @@ private fun ram(overlaySettings: OverlaySettings, data: Data) {
             title = "RAM",
             isHorizontal = overlaySettings.isHorizontal,
         ) {
-            CircularProgress(
+            Progress(
                 value = data.RamUsagePercent / 100f,
                 label = String.format("%02.1f", data.RamUsage / 1000),
-                unit = "GB"
+                unit = "GB",
+                progressType = overlaySettings.progressType
             )
         }
     }
@@ -178,10 +206,20 @@ private fun cpu(overlaySettings: OverlaySettings, data: Data) {
             isHorizontal = overlaySettings.isHorizontal,
         ) {
             if (overlaySettings.cpuTemp) {
-                CircularProgress(value = data.CpuTemp / 100f, label = "${data.CpuTemp}", unit = "c")
+                Progress(
+                    value = data.CpuTemp / 100f,
+                    label = "${data.CpuTemp}",
+                    unit = "c",
+                    progressType = overlaySettings.progressType
+                )
             }
             if (overlaySettings.cpuUsage) {
-                CircularProgress(value = data.CpuUsage / 100f, label = String.format("%02d", data.CpuUsage), unit = "%")
+                Progress(
+                    value = data.CpuUsage / 100f,
+                    label = String.format("%02d", data.CpuUsage),
+                    unit = "%",
+                    progressType = overlaySettings.progressType
+                )
             }
         }
     }
@@ -195,16 +233,27 @@ private fun gpu(overlaySettings: OverlaySettings, data: Data) {
             isHorizontal = overlaySettings.isHorizontal,
         ) {
             if (overlaySettings.gpuTemp) {
-                CircularProgress(value = data.GpuTemp / 100f, label = "${data.GpuTemp}", unit = "c")
+                Progress(
+                    value = data.GpuTemp / 100f,
+                    label = "${data.GpuTemp}",
+                    unit = "c",
+                    progressType = overlaySettings.progressType
+                )
             }
             if (overlaySettings.gpuUsage) {
-                CircularProgress(value = data.GpuUsage / 100f, label = String.format("%02d", data.GpuUsage), unit = "%")
+                Progress(
+                    value = data.GpuUsage / 100f,
+                    label = String.format("%02d", data.GpuUsage),
+                    unit = "%",
+                    progressType = overlaySettings.progressType
+                )
             }
             if (overlaySettings.vramUsage) {
-                CircularProgress(
+                Progress(
                     value = data.VramUsagePercent / 100f,
                     label = String.format("%02.1f", data.VramUsage / 1000),
-                    unit = "GB"
+                    unit = "GB",
+                    progressType = overlaySettings.progressType
                 )
             }
         }
@@ -229,6 +278,49 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
             }
 
             if (overlaySettings.frametime) {
+                var largestFrametime = remember { mutableFloatStateOf(0f) }
+                val listSize = 30
+                val frametimePoints = remember { mutableStateListOf<Float>() }
+
+                val frametimePaint = remember {
+                    Paint().apply {
+                        isAntiAlias = true
+                        color = Color.White
+                        strokeWidth = 1f
+                        blendMode = BlendMode.Plus
+                    }
+                }
+
+                LaunchedEffect(data) {
+                    if (data.Frametime > largestFrametime.floatValue) {
+                        largestFrametime.floatValue = data.Frametime
+                    }
+                    frametimePoints.add(data.Frametime / largestFrametime.floatValue)
+                    if (frametimePoints.size > listSize) frametimePoints.removeFirst()
+                }
+
+                Box(modifier = Modifier
+                    .width(100.dp)
+                    .height(45.dp)
+                    .graphicsLayer { alpha = 0.99f }
+                    .drawWithContent {
+                        val colors = listOf(Color.Transparent, Color.Black, Color.Black, Color.Transparent)
+                        val throttleZip = frametimePoints.zipWithNext()
+
+                        drawIntoCanvas { canvas ->
+                            throttleZip.fastForEachIndexed { index, pair ->
+                                val x0 = size.width * (1f / listSize * (index))
+                                val y0 = (size.height * (1f - pair.first))
+                                val x1 = size.width * (1f / listSize * (index + 1))
+                                val y1 = (size.height * (1f - pair.second))
+
+                                canvas.drawLine(Offset(x0, y0), Offset(x1, y1), frametimePaint)
+                            }
+                        }
+                        drawRect(brush = Brush.horizontalGradient(colors), blendMode = BlendMode.DstIn)
+                    })
+
+
                 Text(
                     text = "${String.format("%02.01f", data.Frametime)}ms",
                     color = Color.White,
@@ -239,4 +331,20 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
             }
         }
     }
+}
+
+private fun NativeCanvas.drawLine(
+    canvasSize: IntSize,
+    listSize: Int,
+    index: Int,
+    pair: Pair<Float, Float>,
+    throttlePaint: NativePaint
+) {
+    this.drawLine(
+        x0 = canvasSize.width.toFloat() * (1f / listSize * (index)),
+        y0 = (canvasSize.height.toFloat() * (1f - pair.first)),
+        x1 = canvasSize.width.toFloat() * (1f / listSize * (index + 1)),
+        y1 = (canvasSize.height.toFloat() * (1f - pair.second)),
+        paint = throttlePaint
+    )
 }
