@@ -1,38 +1,20 @@
 package ui.app
 
-import Label
-import PreferencesRepository
 import Title
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import br.com.firstsoft.target.server.ui.AppTheme
 import br.com.firstsoft.target.server.ui.OverlaySettingsUi
-import br.com.firstsoft.target.server.ui.components.CheckboxWithLabel
-import br.com.firstsoft.target.server.ui.components.DropdownMenu
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import ui.AppSettings
 
 const val OVERLAY_SETTINGS_PREFERENCE_KEY = "OVERLAY_SETTINGS_PREFERENCE_KEY"
@@ -49,7 +31,7 @@ val positionsLabels = listOf(
 @Composable
 fun Settings(
     onOverlaySettings: (OverlaySettings) -> Unit,
-) = MaterialTheme {
+) = AppTheme {
     Column(modifier = Modifier.fillMaxSize()) {
 
         var selectedTabIndex by remember { mutableStateOf(0) }
