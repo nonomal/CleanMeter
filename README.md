@@ -1,5 +1,8 @@
 # <img align="left" src="images/Logo.png" height=50> Clean Meter
 
+> Did you like my work? Consider supporting me so I can keep putting hours in.
+> https://ko-fi.com/danil0v3s
+
 ## What is this?
 
 A small desktop companion app to display sleek graphs overlays from Afterburner
