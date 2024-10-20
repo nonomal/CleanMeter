@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,25 +18,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.LinearGradientShader
-import androidx.compose.ui.graphics.NativeCanvas
-import androidx.compose.ui.graphics.NativePaint
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
@@ -45,13 +36,10 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.util.fastForEachIndexed
 import br.com.firstsoft.target.server.ui.components.Progress
 import br.com.firstsoft.target.server.ui.components.Pill
@@ -278,7 +266,7 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
             }
 
             if (overlaySettings.frametime) {
-                var largestFrametime = remember { mutableFloatStateOf(0f) }
+                val largestFrametime = remember { mutableFloatStateOf(0f) }
                 val listSize = 30
                 val frametimePoints = remember { mutableStateListOf<Float>() }
 
@@ -305,10 +293,10 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
                     .graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(Color.Transparent, Color.Black, Color.Black, Color.Transparent)
-                        val throttleZip = frametimePoints.zipWithNext()
+                        val frametimeZip = frametimePoints.zipWithNext()
 
                         drawIntoCanvas { canvas ->
-                            throttleZip.fastForEachIndexed { index, pair ->
+                            frametimeZip.fastForEachIndexed { index, pair ->
                                 val x0 = size.width * (1f / listSize * (index))
                                 val y0 = (size.height * (1f - pair.first))
                                 val x1 = size.width * (1f / listSize * (index + 1))
@@ -333,18 +321,3 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
     }
 }
 
-private fun NativeCanvas.drawLine(
-    canvasSize: IntSize,
-    listSize: Int,
-    index: Int,
-    pair: Pair<Float, Float>,
-    throttlePaint: NativePaint
-) {
-    this.drawLine(
-        x0 = canvasSize.width.toFloat() * (1f / listSize * (index)),
-        y0 = (canvasSize.height.toFloat() * (1f - pair.first)),
-        x1 = canvasSize.width.toFloat() * (1f / listSize * (index + 1)),
-        y1 = (canvasSize.height.toFloat() * (1f - pair.second)),
-        paint = throttlePaint
-    )
-}
