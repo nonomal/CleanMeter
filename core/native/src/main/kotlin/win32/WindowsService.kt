@@ -8,11 +8,8 @@ import com.sun.jna.platform.win32.WinBase
 import com.sun.jna.platform.win32.WinDef.HWND
 import com.sun.jna.platform.win32.WinNT
 import com.sun.jna.platform.win32.WinNT.HANDLE
-import com.sun.jna.platform.win32.WinNT.INFINITE
 import com.sun.jna.platform.win32.WinUser
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.awt.Component
-import kotlin.coroutines.resume
 
 class WindowsService {
 

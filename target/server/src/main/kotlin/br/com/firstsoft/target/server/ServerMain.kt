@@ -19,6 +19,12 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.github.kwhat.jnativehook.GlobalScreen
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import ui.PREFERENCE_START_MINIMIZED
 import ui.app.Overlay
 import ui.app.OverlaySettings
@@ -26,7 +32,6 @@ import ui.app.Settings
 import win32.WindowsService
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
-
 
 val positions = listOf(
     Alignment.TopStart,
@@ -37,18 +42,45 @@ val positions = listOf(
     Alignment.BottomEnd,
 )
 
-fun main() = application {
-    var overlaySettings by remember { mutableStateOf(OverlaySettings()) }
+fun main() {
+    val channel = Channel<Unit>()
 
-    OverlayWindow(overlaySettings)
+    GlobalScreen.registerNativeHook()
+    GlobalScreen.addNativeKeyListener(object : NativeKeyListener {
+        override fun nativeKeyReleased(nativeEvent: NativeKeyEvent) {
+            val isCtrl = nativeEvent.modifiers.and(NativeKeyEvent.CTRL_MASK) > 0
+            val isAlt = nativeEvent.modifiers.and(NativeKeyEvent.VC_ALT) > 0
+            val isF10 = nativeEvent.keyCode == NativeKeyEvent.VC_F10
 
-    SettingsWindow {
-        overlaySettings = it
+            if (isCtrl && isAlt && isF10) {
+                channel.trySend(Unit)
+            }
+        }
+    })
+
+    application {
+        var overlaySettings by remember { mutableStateOf(OverlaySettings()) }
+
+        OverlayWindow(channel, overlaySettings)
+
+        SettingsWindow {
+            overlaySettings = it
+        }
     }
 }
 
 @Composable
-private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
+private fun ApplicationScope.OverlayWindow(
+    channel: Channel<Unit>,
+    overlaySettings: OverlaySettings
+) {
+    var isVisible by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        channel.receiveAsFlow().collectLatest {
+            isVisible = !isVisible
+        }
+    }
+
     val alignment = remember(overlaySettings.positionIndex) { positions[overlaySettings.positionIndex] }
     val overlayState = rememberWindowState().apply {
         size = if (overlaySettings.isHorizontal) DpSize(1024.dp, 80.dp) else DpSize(350.dp, 1024.dp)
@@ -64,14 +96,14 @@ private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
     Window(
         state = overlayState,
         onCloseRequest = { exitApplication() },
-        visible = true,
+        visible = isVisible,
         title = "Clean Meter",
         resizable = false,
         alwaysOnTop = true,
         transparent = true,
         undecorated = true,
         focusable = false,
-        enabled = false
+        enabled = false,
     ) {
         LaunchedEffect(alignment, overlaySettings.selectedDisplayIndex) {
             val location = when (alignment) {
@@ -113,17 +145,19 @@ private fun ApplicationScope.OverlayWindow(overlaySettings: OverlaySettings) {
 }
 
 @Composable
-private fun ApplicationScope.SettingsWindow(onOverlaySettings: (OverlaySettings) -> Unit) {
-    val icon = painterResource("imgs/logo.png")
-    val state = rememberWindowState().apply {
-        size = DpSize(500.dp, 500.dp)
-    }
+private fun ApplicationScope.SettingsWindow(
+    onOverlaySettings: (OverlaySettings) -> Unit
+) {
     var isVisible by remember {
         mutableStateOf(
             PreferencesRepository.getPreferenceBooleanNullable(
                 PREFERENCE_START_MINIMIZED
             )?.not() ?: true
         )
+    }
+    val icon = painterResource("imgs/logo.png")
+    val state = rememberWindowState().apply {
+        size = DpSize(500.dp, 500.dp)
     }
 
     Window(
@@ -142,7 +176,13 @@ private fun ApplicationScope.SettingsWindow(onOverlaySettings: (OverlaySettings)
             icon = icon,
             onAction = { isVisible = true },
             menu = {
-                Item("Quit", onClick = ::exitApplication)
+                Item("Quit", onClick = {
+                    try {
+                        GlobalScreen.unregisterNativeHook()
+                    } catch (e: Exception) {
+                    }
+                    exitApplication()
+                })
             }
         )
     }

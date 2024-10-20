@@ -34,3 +34,4 @@ jackson-dataformat = { module = "com.fasterxml.jackson.dataformat:jackson-datafo
 
 jna = "net.java.dev.jna:jna-platform:5.12.1"
 oshi = "com.github.oshi:oshi-core:6.6.5"
+jnativehook = "com.github.kwhat:jnativehook:2.2.2"
