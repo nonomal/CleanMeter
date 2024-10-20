@@ -310,7 +310,7 @@ private fun fps(overlaySettings: OverlaySettings, data: Data) {
 
 
                 Text(
-                    text = "${String.format("%02.01f", data.Frametime)}ms",
+                    text = "${String.format("%02.01f", data.Frametime)} ms",
                     color = Color.White,
                     fontSize = 12.sp,
                     lineHeight = 0.sp,
