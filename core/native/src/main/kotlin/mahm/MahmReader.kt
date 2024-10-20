@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package mahm
 
 import com.sun.jna.Pointer
@@ -29,7 +27,7 @@ class MahmReader {
     private var memoryMapFile: WinNT.HANDLE? = null
     private var pointer: Pointer? = null
 
-    var pollingInterval = 33L
+    var pollingInterval = 1000L
     val currentData = flow<Data?> {
         tryOpenMemoryFile()
         pointer ?: return@flow
@@ -54,8 +52,8 @@ class MahmReader {
     fun tryOpenMemoryFile() {
         windowsService.openMemoryMapFile(MEMORY_MAP_FILE_NAME)?.let { handle ->
             memoryMapFile = handle
-            pointer = windowsService.mapViewOfFile(handle) ?: throw Error("Could not create pointer")
-        } ?: throw Error("Could not read MAHMSharedMemory")
+            pointer = windowsService.mapViewOfFile(handle) ?: throw Error("Something went wrong: Could not create pointer")
+        } ?: throw Error("Could not read AfterBurner data. Is it running?")
     }
 
     private fun readHeader(pointer: Pointer): Header {
