@@ -24,7 +24,7 @@ import win32.WinRegistry
 const val PREFERENCE_START_MINIMIZED = "PREFERENCE_START_MINIMIZED"
 
 @Composable
-fun AppSettings() = Column {
+fun AppSettingsUi() = Column {
     Column(
         modifier = Modifier.weight(1f).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)

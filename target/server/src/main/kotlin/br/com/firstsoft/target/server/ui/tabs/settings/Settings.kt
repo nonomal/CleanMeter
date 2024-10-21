@@ -13,9 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import br.com.firstsoft.target.server.ui.AppTheme
-import br.com.firstsoft.target.server.ui.OverlaySettingsUi
+import br.com.firstsoft.target.server.ui.tabs.settings.OverlaySettingsUi
 import kotlinx.serialization.Serializable
-import ui.AppSettings
+import ui.AppSettingsUi
 
 const val OVERLAY_SETTINGS_PREFERENCE_KEY = "OVERLAY_SETTINGS_PREFERENCE_KEY"
 
@@ -50,7 +50,7 @@ fun Settings(
 
         when (selectedTabIndex) {
             0 -> OverlaySettingsUi(onOverlaySettings)
-            1 -> AppSettings()
+            1 -> AppSettingsUi()
             else -> Unit
         }
     }

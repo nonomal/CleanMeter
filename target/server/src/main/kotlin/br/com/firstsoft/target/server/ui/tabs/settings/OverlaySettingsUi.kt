@@ -1,4 +1,4 @@
-package br.com.firstsoft.target.server.ui
+package br.com.firstsoft.target.server.ui.tabs.settings
 
 import Label
 import androidx.compose.foundation.layout.Arrangement
