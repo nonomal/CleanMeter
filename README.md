@@ -38,6 +38,13 @@ Q: Framerate/Frametime isn't showing
 A: Make sure you checked the sensors at the monitoring tab
 ![image](https://github.com/user-attachments/assets/34566585-6279-40a0-a099-34167b0f34c7)
 
+Q: There is no available HwInfo sensors in Afterburner plugins
+![image](images/qa_clean_meter2.png)
+
+A: Make sure you enable Shared Memory Support in HwInfo settings 
+![image](images/qa_clean_meter.png)
+
+
 
 ## More Images
 
