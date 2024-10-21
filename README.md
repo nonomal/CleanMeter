@@ -25,11 +25,19 @@ A small desktop companion app to display sleek graphs overlays from Afterburner
    ![image](https://github.com/user-attachments/assets/3fdb68ad-0f81-42f7-bb0f-5d35ca08fac3)
    
    9. Ok > Ok
-   10. Back to Monitoring tab, check every sensor
+   10. Back to Monitoring tab, _**check every sensor**_
 4. Download the latest release, run it
 
 ## Current Limitations
 - Doesn't work with exclusive fullscreen
+
+## FAQ
+
+Q: Framerate/Frametime isn't showing
+
+A: Make sure you checked the sensors at the monitoring tab
+![image](https://github.com/user-attachments/assets/34566585-6279-40a0-a099-34167b0f34c7)
+
 
 ## More Images
 
