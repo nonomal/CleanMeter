@@ -44,7 +44,7 @@ compose.desktop {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb)
 
             packageName = "Clean Meter"
-            packageVersion = "0.0.1"
+            packageVersion = "0.0.3"
 
             windows {
                 iconFile.set(project.file("src/main/resources/imgs/favicon.ico"))
