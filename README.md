@@ -5,7 +5,7 @@
 
 ## What is this?
 
-A small desktop companion app to display sleek graphs overlays from Afterburner
+A small desktop companion app to display sleek graphs overlays from Afterburner. Designs were made by [/u/Violetmars](https://www.reddit.com/user/Violetmars/)
 <img align="right" src="https://github.com/user-attachments/assets/5e797f42-bebc-4d8f-82c8-837fc4b58a07">
 <img align="center" src="https://github.com/user-attachments/assets/6c7bd91a-7e9a-4c38-a450-d6e2ce26bcd4">
 
