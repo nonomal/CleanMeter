@@ -5,7 +5,8 @@
 
 ## What is this?
 
-A small desktop companion app to display sleek graphs overlays from Afterburner
+A small desktop companion app to display sleek graphs overlays from Afterburner. Designs were made by [/u/Violetmars](https://www.reddit.com/user/Violetmars/)
+
 <img align="right" src="https://github.com/user-attachments/assets/5e797f42-bebc-4d8f-82c8-837fc4b58a07">
 <img align="center" src="https://github.com/user-attachments/assets/6c7bd91a-7e9a-4c38-a450-d6e2ce26bcd4">
 
@@ -25,11 +26,26 @@ A small desktop companion app to display sleek graphs overlays from Afterburner
    ![image](https://github.com/user-attachments/assets/3fdb68ad-0f81-42f7-bb0f-5d35ca08fac3)
    
    9. Ok > Ok
-   10. Back to Monitoring tab, check every sensor
+   10. Back to Monitoring tab, _**check every sensor**_
 4. Download the latest release, run it
 
 ## Current Limitations
 - Doesn't work with exclusive fullscreen
+
+## FAQ
+
+Q: Framerate/Frametime isn't showing
+
+A: Make sure you checked the sensors at the monitoring tab
+![image](https://github.com/user-attachments/assets/34566585-6279-40a0-a099-34167b0f34c7)
+
+Q: There is no available HwInfo sensors in Afterburner plugins
+![image](images/qa_clean_meter2.png)
+
+A: Make sure you enable Shared Memory Support in HwInfo settings 
+![image](images/qa_clean_meter.png)
+
+
 
 ## More Images
 
