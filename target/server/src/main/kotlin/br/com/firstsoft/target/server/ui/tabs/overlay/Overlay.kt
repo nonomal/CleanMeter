@@ -6,13 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import br.com.firstsoft.target.server.ui.AppTheme
-import mahm.MahmReader
+import hwinfo.HwInfoReader
 import ui.OverlayUi
 
 
 @Composable
 fun Overlay(
-    mahmReader: MahmReader = MahmReader(),
+    hwInfoReader: HwInfoReader = HwInfoReader(),
     overlaySettings: OverlaySettings,
 ) = AppTheme {
     val arrangement = when (overlaySettings.positionIndex) {
@@ -25,6 +25,9 @@ fun Overlay(
         else -> Alignment.Center
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = arrangement) {
-        OverlayUi(mahmReader, overlaySettings)
+        OverlayUi(
+            reader = hwInfoReader,
+            overlaySettings = overlaySettings
+        )
     }
 }
