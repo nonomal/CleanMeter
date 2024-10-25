@@ -15,16 +15,36 @@ fun Overlay(
     hwInfoReader: HwInfoReader = HwInfoReader(),
     overlaySettings: OverlaySettings,
 ) = AppTheme {
-    val arrangement = when (overlaySettings.positionIndex) {
+    if (listOf(
+            overlaySettings.fps,
+            overlaySettings.frametime,
+            overlaySettings.cpuTemp,
+            overlaySettings.gpuTemp,
+            overlaySettings.cpuUsage,
+            overlaySettings.gpuUsage,
+            overlaySettings.vramUsage,
+            overlaySettings.ramUsage
+        ).all { !it }
+    ) {
+        return@AppTheme
+    }
+
+    val alignment = when (overlaySettings.positionIndex) {
         0 -> Alignment.TopStart
         1 -> Alignment.TopCenter
         2 -> Alignment.TopEnd
         3 -> Alignment.BottomStart
         4 -> Alignment.BottomCenter
         5 -> Alignment.BottomEnd
+        6 -> when {
+            overlaySettings.positionX <= 40 -> Alignment.CenterStart
+            overlaySettings.positionX >= 60 -> Alignment.CenterEnd
+            else -> Alignment.Center
+        }
         else -> Alignment.Center
     }
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = arrangement) {
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = alignment) {
         OverlayUi(
             reader = hwInfoReader,
             overlaySettings = overlaySettings
