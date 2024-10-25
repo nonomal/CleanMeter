@@ -3,6 +3,9 @@
 > Did you like my work? Consider supporting me so I can keep putting hours in.
 > https://ko-fi.com/danil0v3s
 
+> [!IMPORTANT]  
+> We're about to release 0.0.4 which will DROP the need of MSI Afterburner and rely entirely on HWInfo alone. We heard some of you dislike Afterburner so we opted to go the least friction route.
+
 ## What is this?
 
 A small desktop companion app to display sleek graphs overlays from Afterburner. Designs were made by [/u/Violetmars](https://www.reddit.com/user/Violetmars/)
