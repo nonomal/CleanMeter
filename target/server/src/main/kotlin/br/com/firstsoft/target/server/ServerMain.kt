@@ -231,7 +231,7 @@ private fun ApplicationScope.SettingsWindow(
     }
     val icon = painterResource("imgs/logo.png")
     val state = rememberWindowState().apply {
-        size = DpSize(650.dp, 900.dp)
+        size = DpSize(650.dp, 650.dp)
     }
 
     Window(

@@ -1,4 +1,4 @@
-package br.com.firstsoft.target.server.ui.tabs.settings
+package br.com.firstsoft.target.server.ui.settings
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -313,23 +313,18 @@ fun StyleUi(
     }
 
     CollapsibleSection(title = "OPACITY") {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+        Column {
             Slider(
                 value = overlaySettings.opacity,
                 onValueChange = {
-                    println(it)
                     onOverlaySettings(overlaySettings.copy(opacity = it.coerceIn(0f, 1f)))
                 },
                 steps = 9,
                 track = { sliderState ->
-                    val textMeasurer = rememberTextMeasurer()
-
                     Canvas(
                         Modifier
                             .fillMaxWidth()
-                            .height(60.dp)
+                            .height(24.dp)
                     ) {
                         drawTrack(
                             FloatArray(sliderState.steps + 2) { it.toFloat() / (sliderState.steps + 1) },
@@ -339,7 +334,6 @@ fun StyleUi(
                             DarkGray,
                             AlmostVisibleGray,
                             Color.White,
-                            textMeasurer
                         )
                     }
                 },
@@ -347,6 +341,11 @@ fun StyleUi(
                     SliderThumb()
                 }
             )
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                Icon(painterResource("icons/no_brightness.svg"), "", tint = LabelGray)
+                Icon(painterResource("icons/mid_brightness.svg"), "", tint = LabelGray)
+                Icon(painterResource("icons/full_brightness.svg"), "", tint = LabelGray)
+            }
         }
     }
 
