@@ -14,18 +14,12 @@ A small desktop companion app to display sleek graphs overlays from HWInfo. Desi
 <img align="center" src="https://github.com/user-attachments/assets/6c7bd91a-7e9a-4c38-a450-d6e2ce26bcd4">
 
 ## Getting started
-1. Make sure you have HWInfo up and running and RTSS overlay turned off
-2. Enable Shared Memory Support in HWInfo
+1. If you have HWiNFO installed already, make sure that `Enable Shared Memory Support` is **enabled** at the settings.
 ![image](images/qa_clean_meter.png)
+> [!IMPORTANT]  
+> If you chose to have HWiNFO installed, _**you**_ will have to manage the `Shared Memory Support` limitation of 12 hours. Every 12 hours of uptime you will need to re-enable the setting. It seems the timer resets if you shutdown your computer before 12h uptime.
+2. If you didn't have HWiNFO installed, there's no need to do any additional setup. (We manage a portable version of it ourselves)
 3. Download the latest release, run it
 
 ## Current Limitations
 - Doesn't work with exclusive fullscreen
-
-## More Images
-
-![image](https://github.com/user-attachments/assets/1fc2ed45-5929-4344-845f-e4ec718dbca6)
-![image](https://github.com/user-attachments/assets/801c9c9d-9462-4804-acc7-3fbba77c2a52)
-![image](https://github.com/user-attachments/assets/03ba60d5-66d8-474a-9db1-bcd95df8e1da)
-
-
