@@ -33,7 +33,11 @@ object HwInfoProcessManager {
     }
 
     fun stop() {
-        process?.destroy()
+        process?.apply {
+            descendants().forEach(ProcessHandle::destroy)
+            destroy()
+        }
+        process = null
     }
 
     private fun overwriteSettings() {
