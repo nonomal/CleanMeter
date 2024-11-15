@@ -1,7 +1,8 @@
 # <img align="left" src="images/Logo.png" height=50> Clean Meter
 
 > Did you like my work? Consider supporting me so I can keep putting hours in.
-> https://ko-fi.com/danil0v3s
+> - [ko-fi](https://ko-fi.com/danil0v3s)
+> - [PayPal](https://www.paypal.com/donate/?hosted_button_id=W2GU6AHGQUND8)
 
 > [!IMPORTANT]  
 > We released 0.0.4 which DROPPED the need of MSI Afterburner and rely entirely on HWInfo alone. We heard some of you dislike Afterburner so we opted to go the least friction route.
