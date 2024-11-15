@@ -64,7 +64,7 @@ compose.desktop {
             targetFormats(TargetFormat.Exe, TargetFormat.Deb)
 
             packageName = "cleanmeter"
-            packageVersion = "0.0.5"
+            packageVersion = "0.0.6"
 
             windows {
                 iconFile.set(project.file("src/main/resources/imgs/favicon.ico"))
