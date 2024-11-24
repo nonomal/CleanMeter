@@ -52,7 +52,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '22.0.2'
-        distribution: 'coretto'
+        distribution: 'corretto'
 
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
