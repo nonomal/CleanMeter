@@ -40,6 +40,12 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew :target:server:createDistributable
 
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-without-markdown
+        path: target\server\build\compose\binaries\main\app
+
   dependency-submission:
 
     runs-on: ubuntu-latest
