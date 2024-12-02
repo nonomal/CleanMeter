@@ -11,22 +11,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import br.com.firstsoft.core.common.hwinfo.HwInfoData
+import br.com.firstsoft.core.common.reporting.setDefaultUncaughtExceptionHandler
+import br.com.firstsoft.core.os.hardwaremonitor.HardwareMonitorProcessManager
+import br.com.firstsoft.core.os.hardwaremonitor.HardwareMonitorReader
+import br.com.firstsoft.core.os.hardwaremonitor.PresentMonProcessManager
+import br.com.firstsoft.target.server.data.ObserveHardwareReadings
+import br.com.firstsoft.target.server.data.OverlaySettingsRepository
+import br.com.firstsoft.target.server.model.OverlaySettings
 import br.com.firstsoft.target.server.ui.overlay.OverlayWindow
 import br.com.firstsoft.target.server.ui.settings.SettingsWindow
-import kotlinx.coroutines.channels.Channel
-import br.com.firstsoft.core.common.reporting.setDefaultUncaughtExceptionHandler
-import br.com.firstsoft.core.os.hwinfo.HwInfoProcessManager
-import br.com.firstsoft.core.os.hwinfo.HwInfoReader
-import br.com.firstsoft.target.server.data.OverlaySettingsRepository
-import br.com.firstsoft.target.server.data.PreferencesRepository
-import br.com.firstsoft.target.server.data.loadOverlaySettings
-import br.com.firstsoft.target.server.model.OverlaySettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -45,6 +45,10 @@ class MainViewModel : ViewModel() {
 
     private fun observeOverlaySettings() {
         CoroutineScope(Dispatchers.IO).launch {
+            ObserveHardwareReadings.data.collect {
+                println(it)
+            }
+
             OverlaySettingsRepository
                 .data
                 .collectLatest { overlaySettings ->
@@ -65,9 +69,14 @@ fun main() {
     setDefaultUncaughtExceptionHandler()
 
     val channel = Channel<Unit>()
-    registerKeyboardHook(channel)
+    //registerKeyboardHook(channel)
+    Runtime.getRuntime().addShutdownHook(Thread {
+        HardwareMonitorProcessManager.stop()
+        PresentMonProcessManager.stop()
+    })
 
-    HwInfoProcessManager.start()
+    PresentMonProcessManager.start()
+    HardwareMonitorProcessManager.start()
 
     application {
         val viewModel: MainViewModel = viewModel(ApplicationViewModelStoreOwner)
@@ -95,7 +104,8 @@ fun main() {
         SettingsWindow(
             getOverlayPosition = { overlayPosition },
             onApplicationExit = {
-                HwInfoProcessManager.stop()
+                HardwareMonitorProcessManager.stop()
+                PresentMonProcessManager.stop()
             }
         )
     }

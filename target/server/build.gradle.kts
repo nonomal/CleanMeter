@@ -74,10 +74,12 @@ compose.desktop {
         }
 
         nativeDistributions {
+            val projectVersion: String by project
+
             targetFormats(TargetFormat.Exe, TargetFormat.Deb)
 
             packageName = "cleanmeter"
-            packageVersion = "0.0.8"
+            packageVersion = projectVersion
 
             windows {
                 iconFile.set(project.file("src/main/resources/imgs/favicon.ico"))
