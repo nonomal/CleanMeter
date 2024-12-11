@@ -39,7 +39,6 @@ rootProject.name = "CleanMeter"
 include(
     "core:common",
     "core:native",
-    "target:server"
+    "core:updater",
+    "target:desktop"
 )
-include("core:updater")
-findProject(":core:updater")?.name = "updater"
