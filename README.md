@@ -5,6 +5,9 @@
 > - [PayPal](https://www.paypal.com/donate/?hosted_button_id=W2GU6AHGQUND8)
 
 > [!IMPORTANT]  
+> We are preparing our first major release 1.0.0. It's already available in [beta1](https://github.com/Danil0v3s/CleanMeter/releases/tag/1.0.0.beta-1) and it makes our app completely standalone, without the need of HWiNFO or MSI Afterburner anymore. Try it out and let us know!
+
+> [!IMPORTANT]  
 > We released 0.0.4 which DROPPED the need of MSI Afterburner and rely entirely on HWInfo alone. We heard some of you dislike Afterburner so we opted to go the least friction route.
 
 ## What is this?
