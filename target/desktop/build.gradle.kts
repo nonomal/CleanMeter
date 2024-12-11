@@ -64,7 +64,7 @@ compose.desktop {
             }
         }
 
-        mainClass = "app.cleanmeter.target.server.ServerMainKt"
+        mainClass = "app.cleanmeter.target.desktop.ServerMainKt"
 
         buildTypes.release.proguard {
             version.set("7.5.0")
